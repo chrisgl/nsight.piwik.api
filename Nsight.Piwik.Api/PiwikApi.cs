@@ -112,7 +112,10 @@ namespace Nsight.Piwik.Api
             }
             catch (Exception ex)
             {
-                throw new PiwikApiException(ex);
+                if (!options.SwallowExceptions)
+                {
+                    throw new PiwikApiException(ex);
+                }
             }
         }
 

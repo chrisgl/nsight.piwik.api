@@ -23,6 +23,11 @@ namespace Nsight.Piwik.Api
         public Uri Endpoint { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the API exceptions should be swallowed.
+        /// </summary>
+        public bool SwallowExceptions { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets HTTP handler for test purposes.
         /// </summary>
         internal HttpMessageHandler TestOnlyHttpMessageHandler { get; set; }

@@ -89,6 +89,24 @@ namespace Nsight.Piwik.Api.Tests
         }
 
         [TestMethod]
+        public async Task ExceptionsCanBeSwallowed()
+        {
+            var exceptionOccurred = false;
+
+            try
+            {
+                await CreateNewApiInstance(httpFailureHandler, swallowExceptions: true)
+                    .ReportViewAsync(new PiwikViewInfo("https://www.test.com"));
+            }
+            catch (Exception)
+            {
+                exceptionOccurred = true;
+            }
+
+            Assert.IsFalse(exceptionOccurred);
+        }
+
+        [TestMethod]
         public async Task SendRequestAsync_AddsUserAgentHeader()
         {
             var containsUserAgentHeader = false;
@@ -115,13 +133,14 @@ namespace Nsight.Piwik.Api.Tests
             Assert.IsTrue(containsUserAgentHeader);
         }
 
-        private IPiwikApi CreateNewApiInstance(TestHttpMessageHandler handler = null)
+        private IPiwikApi CreateNewApiInstance(TestHttpMessageHandler handler = null, bool swallowExceptions = false)
         {
             return new Api.PiwikApi(new PiwikApiOptions()
             {
                 SiteId = 123,
                 Endpoint = new Uri("https://www.example.com/piwik"),
-                TestOnlyHttpMessageHandler = handler
+                TestOnlyHttpMessageHandler = handler,
+                SwallowExceptions = swallowExceptions
             });
         }
     }
