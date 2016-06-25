@@ -74,7 +74,7 @@ namespace Nsight.Piwik.Api.Tests
             var info = new PiwikSessionInfo()
             {
                 VisitsCount = 123,
-                UniqueVisitorId = "unique id",
+                UniqueVisitorId = "0123456789abcdef",
                 UserId = "user id",
                 FirstVisit = new DateTimeOffset(1970, 1, 1, 0, 0, 5, TimeSpan.Zero),
                 LastVisit = new DateTimeOffset(1970, 1, 1, 0, 0, 40, TimeSpan.Zero)
@@ -83,7 +83,35 @@ namespace Nsight.Piwik.Api.Tests
             var result = PiwikDataConverter.GetSessionInfoArgs(info);
 
             Assert.IsNotNull(result);
-            AssertEqual(result, new[] { "_id=unique%20id", "_idvc=123", "uid=user%20id", "_idts=5", "_viewts=40" });
+            AssertEqual(result, new[] { "cid=0123456789abcdef", "_idvc=123", "uid=user%20id", "_idts=5", "_viewts=40" });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void GetSessionInfoArgs_UniqueVisitorId_Less16()
+        {
+            PiwikDataConverter.GetSessionInfoArgs(new PiwikSessionInfo()
+            {
+                VisitsCount = 123,
+                UniqueVisitorId = "0123456789abcde",    //  Less than 16 characters.
+                UserId = "user id",
+                FirstVisit = new DateTimeOffset(1970, 1, 1, 0, 0, 5, TimeSpan.Zero),
+                LastVisit = new DateTimeOffset(1970, 1, 1, 0, 0, 40, TimeSpan.Zero)
+            });
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void GetSessionInfoArgs_UniqueVisitorId_More16()
+        {
+            PiwikDataConverter.GetSessionInfoArgs(new PiwikSessionInfo()
+            {
+                VisitsCount = 123,
+                UniqueVisitorId = "0123456789abcdef0",  //  More than 16 characters.
+                UserId = "user id",
+                FirstVisit = new DateTimeOffset(1970, 1, 1, 0, 0, 5, TimeSpan.Zero),
+                LastVisit = new DateTimeOffset(1970, 1, 1, 0, 0, 40, TimeSpan.Zero)
+            });
         }
 
         [TestMethod]

@@ -48,7 +48,15 @@ namespace Nsight.Piwik.Api
 
             var args = new List<string>();
 
-            args.SafeAddStringArgument("_id", session.UniqueVisitorId);
+            if (!string.IsNullOrEmpty(session.UniqueVisitorId))
+            {
+                if (session.UniqueVisitorId.Length != 16)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(session.UniqueVisitorId), "UniqueVisitorId must be a 16 character hexadecimal string.");
+                }
+
+                args.SafeAddStringArgument("cid", session.UniqueVisitorId);
+            }
             args.Add(string.Format(CultureInfo.InvariantCulture, "_idvc={0}", session.VisitsCount));
             args.SafeAddStringArgument("uid", session.UserId);
 
