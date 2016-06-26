@@ -107,7 +107,7 @@ namespace Nsight.Piwik.Api
             {
                 using (var http = new HttpClient(new ApplyUserAgentHttpMessageHandler(options.TestOnlyHttpMessageHandler ?? new HttpClientHandler(), eventInfo.EnvironmentInfo)))
                 {
-                    (await http.GetAsync(requestUri.Uri)).EnsureSuccessStatusCode();
+                    (await http.GetAsync(requestUri.Uri).ConfigureAwait(false)).EnsureSuccessStatusCode();
                 }
             }
             catch (Exception ex)
